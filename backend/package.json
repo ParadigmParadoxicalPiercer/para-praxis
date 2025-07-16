@@ -1,0 +1,65 @@
+{
+  "name": "parapraxis-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Parapraxis wellness platform",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "dev:debug": "node --inspect --watch server.js",
+    "test": "echo \"Add test framework configuration when needed\" && exit 0",
+    "test:watch": "echo \"Add test framework configuration when needed\" && exit 0",
+    "lint": "echo \"Add ESLint configuration\"",
+    "lint:fix": "echo \"Add ESLint configuration\"",
+    "format": "echo \"Add Prettier configuration\"",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force",
+    "db:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "db:push": "prisma db push",
+    "build": "echo \"Production build setup needed\"",
+    "clean": "rm -rf node_modules && rm -rf dist",
+    "logs": "tail -f logs/*.log",
+    "health": "curl -f http://localhost:3333/health || exit 1"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "keywords": [
+    "express",
+    "prisma",
+    "jwt",
+    "authentication",
+    "api",
+    "backend",
+    "wellness",
+    "productivity"
+  ],
+  "type": "module",
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^6.11.1",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.1",
+    "nodemon": "^3.1.10",
+    "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^9.9.0",
+    "prisma": "^6.11.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

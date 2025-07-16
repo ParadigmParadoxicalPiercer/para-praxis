@@ -1,0 +1,32 @@
+@import "tailwindcss";
+/* @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue:wght@700&display=swap"); */
+
+:root {
+  --p5-black: #1a1a1a;
+  --p5-red: #ff003c;
+  --p5-yellow: #ffe600;
+  --p5-white: #fff;
+}
+
+body {
+  background-color: var(--p5-black);
+  color: var(--p5-white);
+  font-family: "Bebas Neue", Impact, Arial Black, sans-serif;
+}
+
+.persona5-font {
+  font-family: "Bebas Neue", Impact, Arial Black, sans-serif;
+  text-shadow: 2px 3px 0 #000, 4px 6px 4px #e11d48;
+}
+
+.persona5-btn {
+  box-shadow: 3px 3px 0 #fff, 6px 6px 0 #111;
+  transition: box-shadow 0.1s;
+}
+.persona5-btn:hover {
+  box-shadow: 0 0 0 #fff, 0 0 0 #111;
+}
+.persona5-form {
+  box-shadow: 0px 0px 0px 6px #e11d48, 0px 0px 0px 12px #fff,
+    6px 8px 0px 0px #000;
+}

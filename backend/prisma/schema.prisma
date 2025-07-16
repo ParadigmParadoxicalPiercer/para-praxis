@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  password      String
+  personalGoals String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  journals      Journal[]
+  tasks         Task[]
+  workoutPlans  WorkoutPlan[]
+  workouts      WorkoutExercise[]
+  medias        Media[]
+  focusSessions FocusSession[]
+}
+
+model Journal {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User   User? @relation(fields: [userId], references: [id])
+  userId Int?
+
+  Media Media[]
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  completed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  User   User? @relation(fields: [userId], references: [id])
+  userId Int?
+
+  Media Media[]
+}
+
+model WorkoutPlan {
+  id          Int               @id @default(autoincrement())
+  name        String
+  description String?
+  week        Int? // If you want to track weeks
+  user        User              @relation(fields: [userId], references: [id])
+  userId      Int
+  exercises   WorkoutExercise[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model WorkoutExercise {
+  id            Int         @id @default(autoincrement())
+  name          String
+  description   String?
+  completed     Boolean     @default(false)
+  reps          Int?
+  sets          Int?
+  workoutPlan   WorkoutPlan @relation(fields: [workoutPlanId], references: [id])
+  workoutPlanId Int
+  User          User?       @relation(fields: [userId], references: [id])
+  userId        Int?
+
+  Media Media[] // Optional relation to media for images or videos related to the exercise
+}
+
+model Media {
+  id         Int      @id @default(autoincrement())
+  url        String //Cloudinary secure URL
+  publicId   String //Cloudinary public ID for deletion
+  uploadedAt DateTime @default(now())
+  User       User?    @relation(fields: [userId], references: [id])
+  userId     Int?
+
+  //relations of media to 
+
+  taskId            Int?
+  Task              Task?            @relation(fields: [taskId], references: [id])
+  Journal           Journal?         @relation(fields: [journalId], references: [id])
+  journalId         Int?
+  WorkoutExercise   WorkoutExercise? @relation(fields: [workoutExerciseId], references: [id])
+  workoutExerciseId Int?
+}
+
+model FocusSession {
+  id          Int      @id @default(autoincrement())
+  duration    Int // Duration in minutes
+  task        String? // Optional task description
+  notes       String? // Optional notes about the session
+  completedAt DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  User   User @relation(fields: [userId], references: [id])
+  userId Int
+}
