@@ -26,11 +26,6 @@ import mediaRoutes from "./src/routes/media.routes.js";
 
 const app = express();
 
-// เชื่อใจ proxy สำหรับ production
-if (config.isProduction) {
-  app.set("trust proxy", 1);
-}
-
 // Security middleware
 app.use(helmetConfig);
 app.use(securityHeaders);

@@ -1,14 +1,19 @@
 import React from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useLoginStore } from "../stores/useLoginStore";
 
 export default function LoginForm() {
   const { form, errors, serverError, loading, setFormField, handleSubmit } =
     useLoginStore();
+  const navigate = useNavigate();
+
+  const handleFormSubmit = (e) => {
+    handleSubmit(e, () => navigate("/user"));
+  };
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleFormSubmit}
       className="bg-black/90 rounded-2xl px-6 py-8 shadow-2xl border-4 border-white persona5-form"
     >
       <h2 className="text-5xl font-black text-center mt-4 mb-6 text-red-600 drop-shadow persona5-font">

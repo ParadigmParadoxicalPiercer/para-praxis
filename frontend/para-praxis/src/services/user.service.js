@@ -3,7 +3,7 @@ const API_BASE = "/api";
 
 // Get user profile
 export async function getUserProfile() {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("accessToken");
 
   const response = await fetch(`${API_BASE}/users/profile`, {
     headers: {
@@ -21,7 +21,7 @@ export async function getUserProfile() {
 
 // Update user profile
 export async function updateUserProfile(profileData) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("accessToken");
 
   const response = await fetch(`${API_BASE}/users/profile`, {
     method: "PUT",
@@ -41,7 +41,7 @@ export async function updateUserProfile(profileData) {
 
 // Get focus session statistics
 export async function getFocusStats() {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("accessToken");
 
   const response = await fetch(`${API_BASE}/focus/stats`, {
     headers: {
@@ -59,7 +59,7 @@ export async function getFocusStats() {
 
 // Get tasks statistics
 export async function getTasksStats() {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("accessToken");
 
   const response = await fetch(`${API_BASE}/tasks`, {
     headers: {
@@ -84,7 +84,7 @@ export async function getTasksStats() {
 
 // Get workout plans statistics
 export async function getWorkoutStats() {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("accessToken");
 
   const response = await fetch(`${API_BASE}/workout-plans`, {
     headers: {

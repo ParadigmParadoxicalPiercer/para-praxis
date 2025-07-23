@@ -32,7 +32,7 @@ export const useLoginStore = create((set, get) => ({
 
   setServerError: (msg) => set({ serverError: msg }),
 
-  handleSubmit: async (e) => {
+  handleSubmit: async (e, onSuccess) => {
     e.preventDefault();
     set({ serverError: "" });
 
@@ -43,6 +43,7 @@ export const useLoginStore = create((set, get) => ({
       const errObj = {};
       validationError.inner.forEach((err) => {
         errObj[err.path] = err.message;
+        console.error("Validation error:", err.message);
       });
       set({ errors: errObj });
       return;
@@ -50,35 +51,47 @@ export const useLoginStore = create((set, get) => ({
 
     set({ loading: true });
     try {
-      const response = await loginService(
-        get().form.email,
-        get().form.password
-      );
+      const response = await loginService(get().form);
+      console.log("Login response:", response);
+
+      const accessToken = response?.data?.accessToken;
+      console.log("Access Token:", accessToken);
+      if (accessToken) {
+        localStorage.setItem("accessToken", accessToken);
+        console.log("Access token stored in localStorage");
+      } else {
+        console.error(" Login success but no access token received");
+        throw new Error("Login successful but no access token received");
+      }
       // Show success toast using modular utility
       authToast.loginSuccess();
-
-      // Store the JWT token
-      if (response.token) {
-        localStorage.setItem("token", response.token);
-      }
-
-      // Store user data
-      if (response.user) {
-        localStorage.setItem("user", JSON.stringify(response.user));
-      }
-
       get().resetForm();
 
+      if (onSuccess) {
+        setTimeout(() => {
+          onSuccess();
+        }, 3000);
+      }
+      // Store the JWT token
+      // if (response.token) {
+      //   localStorage.setItem("token", response.token);
+      // }
+
+      // Store user data
+      // if (response.user) {
+      //   localStorage.setItem("user", JSON.stringify(response.user));
+      // }
+
       // Redirect to user page after successful login
-      setTimeout(() => {
-        window.location.href = "/user";
-      }, 1500);
+      // setTimeout(() => {
+      //   window.location.href = "/user";
+      // }, 1500);
     } catch (err) {
       const errorMessage =
         err?.response?.data?.message ||
         err?.message ||
         "Login failed. Please try again.";
-
+      console.error("Login error:", errorMessage);
       // Show error toast using modular utility
       authToast.loginError(errorMessage);
 
