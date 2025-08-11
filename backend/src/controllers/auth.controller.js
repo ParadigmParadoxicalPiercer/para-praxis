@@ -3,7 +3,7 @@ import {
   findUserByEmail,
   findUserById,
 } from "../services/auth.service.js";
-import jwtUtils from "../utils/jwt.utils.js";
+import prisma from "../config/prisma.js";
 import {
   createError,
   createConflictError,
@@ -14,6 +14,7 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../config/constants.js";
 import responseHandler from "../utils/response.js";
 import logger from "../utils/logger.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 /**
  * ลงทะเบียนผู้ใช้ใหม่
@@ -68,8 +69,35 @@ export const login = asyncHandler(async (req, res, next) => {
     return next(createAuthError(ERROR_MESSAGES.INVALID_CREDENTIALS));
   }
 
-  // สร้าง token
-  const tokenPair = jwtUtils.generateTokenPair(user);
+  // สร้าง accessToken และ refreshToken
+  const accessToken = jwt.sign(
+    { userId: user.id },
+    process.env.ACCESS_SECRET || "access_secret_key",
+    { expiresIn: "15s" }
+  );
+
+  const refreshToken = jwt.sign(
+    { userId: user.id },
+    process.env.REFRESH_SECRET || "refresh_secret_key",
+    { expiresIn: "20s" } // only for demonstration purposes
+  );
+
+  // บันทึก refreshToken ในฐานข้อมูล
+  await prisma.refreshToken.create({
+    data: {
+      token: refreshToken,
+      userId: user.id,
+      expiresAt: new Date(Date.now() + 20 * 1000), // 20 seconds
+    },
+  });
+
+  // ตั้งค่า cookie สำหรับ refreshToken
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    sameSite: "Strict",
+    secure: true,
+    maxAge: 30 * 24 * 60 * 60 * 1000, //1 month
+  });
 
   logger.info("เข้าสู่ระบบสำเร็จ", { userId: user.id, email });
 
@@ -85,36 +113,52 @@ export const login = asyncHandler(async (req, res, next) => {
     res,
     {
       user: userData,
-      ...tokenPair,
+      accessToken,
+      refreshToken,
     },
     SUCCESS_MESSAGES.LOGIN_SUCCESS
   );
 });
 
 /**
- * ต่ออายุ access token
+ * รีเฟรช access token โดยใช้ refresh token
  */
 export const refreshToken = asyncHandler(async (req, res, next) => {
-  const { user } = req; // ตั้งค่าจาก requireAuth middleware
+  const { refreshToken } = req.cookies;
+  if (!refreshToken) {
+    return next(createAuthError("No refresh token provided"));
+  }
 
-  logger.info("พยายามต่ออายุ token", { userId: user.id });
+  // ตรวจสอบ refreshToken ในฐานข้อมูล
+  const storedToken = await prisma.refreshToken.findUnique({
+    where: { token: refreshToken },
+  });
+  if (!storedToken || storedToken.expiresAt < new Date()) {
+    return next(createAuthError("Invalid or expired refresh token"));
+  }
 
-  // สร้าง access token ใหม่
-  const accessToken = jwtUtils.generateAccessToken(user);
+  // ตรวจสอบและถอดรหัส refreshToken
+  let payload;
+  try {
+    payload = jwt.verify(
+      refreshToken,
+      process.env.REFRESH_SECRET || "refresh_secret_key"
+    );
+  } catch (err) {
+    return next(createAuthError("Invalid refresh token"));
+  }
 
-  logger.info("ต่ออายุ token สำเร็จ", { userId: user.id });
+  // สร้าง accessToken ใหม่
+  const accessToken = jwt.sign(
+    { userId: payload.userId },
+    process.env.ACCESS_SECRET || "access_secret_key",
+    { expiresIn: "15s" }
+  );
 
   return responseHandler.success(
     res,
-    {
-      accessToken,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      },
-    },
-    "Token refreshed successfully"
+    { accessToken },
+    "Access token refreshed"
   );
 });
 

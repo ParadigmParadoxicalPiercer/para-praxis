@@ -9,13 +9,13 @@ export default function RegisterForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-black/90 rounded-2xl px-6 shadow-2xl border-3 border-white persona5-form"
+      className="bg-white rounded-2xl px-6 py-8 shadow-lg border border-slate-200 persona5-form"
     >
-      <h2 className="text-5xl font-black text-center mt-4 mb-2 text-red-600 drop-shadow persona5-font">
+      <h2 className="text-4xl font-extrabold text-center mt-2 mb-6 text-blue-600 persona5-font">
         REGISTER
       </h2>
       {serverError && (
-        <div className="mb-3 bg-red-700/80 text-white px-4 py-2 rounded border-2 border-red-300 text-center font-bold shadow">
+        <div className="mb-3 bg-blue-50 text-blue-700 px-4 py-2 rounded border border-blue-200 text-center font-semibold">
           {serverError}
         </div>
       )}
@@ -26,8 +26,8 @@ export default function RegisterForm() {
         <input
           id="email"
           name="email"
-          className={`w-full px-4 py-2 rounded border-2 border-black bg-white/90 text-black focus:border-red-600 outline-none font-bold ${
-            errors.email ? "border-red-500" : ""
+          className={`w-full px-4 py-2 rounded border border-slate-300 bg-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none font-medium ${
+            errors.email ? "border-red-400" : ""
           }`}
           type="email"
           autoComplete="email"
@@ -37,7 +37,7 @@ export default function RegisterForm() {
           required
         />
         {errors.email && (
-          <div className="text-red-400 font-bold mt-1">{errors.email}</div>
+          <div className="text-red-500 font-medium mt-1">{errors.email}</div>
         )}
       </div>
       <div className="mb-3">
@@ -47,8 +47,8 @@ export default function RegisterForm() {
         <input
           id="username"
           name="username"
-          className={`w-full px-4 py-2 rounded border-2 border-black bg-white/90 text-black focus:border-red-600 outline-none font-bold ${
-            errors.username ? "border-red-500" : ""
+          className={`w-full px-4 py-2 rounded border border-slate-300 bg-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none font-medium ${
+            errors.username ? "border-red-400" : ""
           }`}
           type="text"
           autoComplete="username"
@@ -58,7 +58,7 @@ export default function RegisterForm() {
           required
         />
         {errors.username && (
-          <div className="text-red-400 font-bold mt-1">{errors.username}</div>
+          <div className="text-red-500 font-medium mt-1">{errors.username}</div>
         )}
       </div>
       <div className="mb-3">
@@ -68,8 +68,8 @@ export default function RegisterForm() {
         <input
           id="password"
           name="password"
-          className={`w-full px-4 py-2 rounded border-2 border-black bg-white/90 text-black focus:border-red-600 outline-none font-bold ${
-            errors.password ? "border-red-500" : ""
+          className={`w-full px-4 py-2 rounded border border-slate-300 bg-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none font-medium ${
+            errors.password ? "border-red-400" : ""
           }`}
           type="password"
           autoComplete="new-password"
@@ -79,7 +79,7 @@ export default function RegisterForm() {
           required
         />
         {errors.password && (
-          <div className="text-red-400 font-bold mt-1">{errors.password}</div>
+          <div className="text-red-500 font-medium mt-1">{errors.password}</div>
         )}
       </div>
       <div className="mb-5">
@@ -89,8 +89,8 @@ export default function RegisterForm() {
         <input
           id="confirm"
           name="confirm"
-          className={`w-full px-4 py-2 rounded border-2 border-black bg-white/90 text-black focus:border-red-600 outline-none font-bold ${
-            errors.confirm ? "border-red-500" : ""
+          className={`w-full px-4 py-2 rounded border border-slate-300 bg-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none font-medium ${
+            errors.confirm ? "border-red-400" : ""
           }`}
           type="password"
           autoComplete="new-password"
@@ -100,12 +100,12 @@ export default function RegisterForm() {
           required
         />
         {errors.confirm && (
-          <div className="text-red-400 font-bold mt-1">{errors.confirm}</div>
+          <div className="text-red-500 font-medium mt-1">{errors.confirm}</div>
         )}
       </div>
       <button
         type="submit"
-        className="bg-red-600 hover:bg-yellow-300 hover:text-black transition-all text-white font-black py-3 w-full rounded uppercase text-lg border-4 border-black shadow-lg tracking-wider persona5-btn"
+        className="bg-blue-600 hover:bg-blue-700 transition-all text-white font-semibold py-3 w-full rounded text-lg border border-blue-700 shadow-sm tracking-wide persona5-btn"
         disabled={loading}
       >
         {loading ? "Registering..." : "Join the Para-Praxis!"}
@@ -113,7 +113,7 @@ export default function RegisterForm() {
       <div className="mt-4 text-center mb-6">
         <Link
           to="/auth/login"
-          className="text-yellow-300 hover:underline font-bold"
+          className="text-blue-700 hover:underline font-semibold"
         >
           Already have an account? Login
         </Link>

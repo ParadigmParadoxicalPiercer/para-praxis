@@ -1,15 +1,13 @@
 .p5-header {
-  /* position: fixed; */
-  /* top: 0;
-  left: 0; */
   width: 100vw;
-  background: #f84337;
+  background: #ffffff;
   padding: 8px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   z-index: 100;
-  box-shadow: 0 2px 8px #0007;
+  box-shadow: 0 2px 8px rgba(2, 6, 23, 0.08);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .header-section {
@@ -46,13 +44,13 @@
   margin-right: 30px;
 }
 .logo-red {
-  color: #d1271b;
-  text-shadow: 2px 2px 0 #fff, 4px 4px 0 #000;
+  color: #2563eb;
+  text-shadow: none;
   margin-right: 2px;
 }
 .logo-white {
-  color: #fff;
-  text-shadow: 2px 2px 0 #ef2f23, 4px 4px 0 #000;
+  color: #0f172a;
+  text-shadow: none;
 }
 
 .tools-dropdown {
@@ -60,28 +58,29 @@
   display: inline-block;
 }
 .tools-btn {
-  background: #fff;
-  color: #ef2f23;
+  background: #ffffff;
+  color: #2563eb;
   font-size: 1.2em;
   border: none;
   border-radius: 5px;
   padding: 6px 16px;
   font-weight: bold;
-  box-shadow: 2px 2px 0 #000;
+  box-shadow: 0 1px 2px rgba(2, 6, 23, 0.06);
   cursor: pointer;
   letter-spacing: 1px;
   outline: none;
   margin-right: 16px;
-  transition: background 0.13s, color 0.13s;
+  transition: background 0.13s, color 0.13s, box-shadow 0.13s;
   display: flex;
   align-items: center;
   gap: 7px;
 }
 .tools-btn:hover,
 .tools-btn:focus {
-  background: #ef2f23;
-  color: #fff;
-  outline: 2px solid #fff;
+  background: #2563eb;
+  color: #ffffff;
+  outline: 2px solid #93c5fd;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 .arrow {
   font-size: 0.9em;
@@ -92,11 +91,11 @@
   position: absolute;
   left: 0;
   top: calc(100% + 7px);
-  background: #fff;
-  color: #ef2f23;
-  border: 2px solid #000;
+  background: #ffffff;
+  color: #2563eb;
+  border: 1px solid #e2e8f0;
   border-radius: 7px;
-  box-shadow: 2px 7px 0 #000;
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.08);
   min-width: 220px;
   z-index: 999;
   padding: 7px 0;
@@ -114,50 +113,51 @@
   transition: background 0.11s, color 0.11s;
 }
 .tools-dropdown-menu li a:hover {
-  background: #ef2f23;
-  color: #fff;
+  background: #eff6ff;
+  color: #1d4ed8;
 }
 
 .comic-btn {
   font-size: 1.1em;
-  font-family: Bebas Neue, Impact, Arial Black, sans-serif;
-  border: 2px solid #fff;
-  border-radius: 7px;
-  background: #000;
-  color: #fff;
+  font-family: Quicksand, system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+    Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0f172a;
   letter-spacing: 2px;
   padding: 7px 19px;
   margin-left: 8px;
-  font-weight: bold;
-  box-shadow: 2px 2px 0 #fff, 0 3px 0 #000;
+  font-weight: 700;
+  box-shadow: 0 1px 2px rgba(2, 6, 23, 0.06);
   cursor: pointer;
-  transition: color 0.13s, background 0.13s, border 0.13s;
+  transition: color 0.13s, background 0.13s, border 0.13s, box-shadow 0.13s;
 }
 .comic-btn:hover {
-  background: #fff;
-  color: #ef2f23;
-  border: 2px solid #ef2f23;
-  box-shadow: 2px 2px 0 #000, 0 3px 0 #fff;
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #93c5fd;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 .login-btn {
-  background: #fff;
-  color: #ef2f23;
-  border: 2px solid #ef2f23;
+  background: #ffffff;
+  color: #2563eb;
+  border: 1px solid #93c5fd;
 }
 .login-btn:hover {
-  background: #ef2f23;
-  color: #fff;
-  border: 2px solid #fff;
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #93c5fd;
 }
 .register-btn {
-  background: #ef2f23;
-  color: #fff;
-  border: 2px solid #fff;
+  background: #2563eb;
+  color: #ffffff;
+  border: 1px solid #93c5fd;
 }
 .register-btn:hover {
-  background: #fff;
-  color: #ef2f23;
-  border: 2px solid #ef2f23;
+  background: #1d4ed8;
+  color: #ffffff;
+  border-color: #93c5fd;
 }
 
 /* Responsive fixes */

@@ -14,13 +14,13 @@ export default function LoginForm() {
   return (
     <form
       onSubmit={handleFormSubmit}
-      className="bg-black/90 rounded-2xl px-6 py-8 shadow-2xl border-4 border-white persona5-form"
+      className="bg-white rounded-2xl px-6 py-8 shadow-lg border border-slate-200 persona5-form"
     >
-      <h2 className="text-5xl font-black text-center mt-4 mb-6 text-red-600 drop-shadow persona5-font">
+      <h2 className="text-4xl font-extrabold text-center mt-2 mb-6 text-blue-600 persona5-font">
         LOGIN
       </h2>
       {serverError && (
-        <div className="mb-3 bg-red-700/80 text-white px-4 py-2 rounded border-2 border-red-300 text-center font-bold shadow">
+        <div className="mb-3 bg-blue-50 text-blue-700 px-4 py-2 rounded border border-blue-200 text-center font-semibold">
           {serverError}
         </div>
       )}
@@ -31,8 +31,8 @@ export default function LoginForm() {
         <input
           id="email"
           name="email"
-          className={`w-full px-4 py-2 rounded border-2 border-black bg-white/90 text-black focus:border-red-600 outline-none font-bold ${
-            errors.email ? "border-red-500" : ""
+          className={`w-full px-4 py-2 rounded border border-slate-300 bg-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none font-medium ${
+            errors.email ? "border-red-400" : ""
           }`}
           type="email"
           autoComplete="email"
@@ -42,7 +42,7 @@ export default function LoginForm() {
           required
         />
         {errors.email && (
-          <div className="text-red-400 font-bold mt-1">{errors.email}</div>
+          <div className="text-red-500 font-medium mt-1">{errors.email}</div>
         )}
       </div>
       <div className="mb-5">
@@ -52,8 +52,8 @@ export default function LoginForm() {
         <input
           id="password"
           name="password"
-          className={`w-full px-4 py-2 rounded border-2 border-black bg-white/90 text-black focus:border-red-600 outline-none font-bold ${
-            errors.password ? "border-red-500" : ""
+          className={`w-full px-4 py-2 rounded border border-slate-300 bg-white text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none font-medium ${
+            errors.password ? "border-red-400" : ""
           }`}
           type="password"
           autoComplete="current-password"
@@ -63,12 +63,12 @@ export default function LoginForm() {
           required
         />
         {errors.password && (
-          <div className="text-red-400 font-bold mt-1">{errors.password}</div>
+          <div className="text-red-500 font-medium mt-1">{errors.password}</div>
         )}
       </div>
       <button
         type="submit"
-        className="bg-red-600 hover:bg-yellow-300 hover:text-black transition-all text-white font-black py-3 w-full rounded uppercase text-lg border-4 border-black shadow-lg tracking-wider persona5-btn"
+        className="bg-blue-600 hover:bg-blue-700 transition-all text-white font-semibold py-3 w-full rounded text-lg border border-blue-700 shadow-sm tracking-wide persona5-btn"
         disabled={loading}
       >
         {loading ? "Logging in..." : "Take Your Heart!"}
@@ -76,7 +76,7 @@ export default function LoginForm() {
       <div className="mt-4 text-center mb-6">
         <Link
           to="/auth/register"
-          className="text-yellow-300 hover:underline font-bold"
+          className="text-blue-700 hover:underline font-semibold"
         >
           Don't have an account? Register
         </Link>

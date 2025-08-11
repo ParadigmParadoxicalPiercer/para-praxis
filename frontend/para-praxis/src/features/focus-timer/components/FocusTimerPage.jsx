@@ -32,37 +32,37 @@ export default function FocusTimerPage() {
 
   return (
     <div className="flex-1 relative w-full flex overflow-hidden items-stretch">
-      {/* Background Chronos Image */}
+      {/* Background Timer Image */}
       <img
-        src="/chronos.png"
-        alt="Chronos - God of Time"
-        className="absolute inset-0 w-fit h-full   object-cover z-0 pointer-events-none"
+        src="/timer.png"
+        alt="Timer"
+  className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
         draggable={false}
       />
 
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-black via-red-900 to-black opacity-80 z-10 pointer-events-none" />
+      {/* Light blue overlay */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-blue-50 to-white/0 z-10 pointer-events-none" />
 
       <div className="relative z-20 flex w-full items-stretch">
         {/* Left half - Chronos inspiration */}
         <div className="w-1/2 flex flex-col justify-center items-center px-8 py-12">
           <div className="max-w-lg text-center">
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white drop-shadow-lg mb-6 tracking-tight">
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-slate-800 mb-6 tracking-tight">
               TIME IS
             </h1>
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-red-600 drop-shadow-lg mb-8 tracking-tight">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-blue-600 mb-8 tracking-tight">
               PRECIOUS
             </h2>
-            <p className="text-xl sm:text-2xl text-yellow-300 font-bold leading-relaxed mb-8">
+            <p className="text-xl sm:text-2xl text-blue-700 font-semibold leading-relaxed mb-8">
               "Time is the most valuable thing we have, because it is the most
               irrevocable."
             </p>
-            <div className="bg-black/70 rounded-lg p-6 border-2 border-red-600">
-              <p className="text-white text-lg leading-relaxed">
+            <div className="bg-white rounded-lg p-6 border border-blue-200 shadow-sm">
+              <p className="text-slate-700 text-lg leading-relaxed">
                 Channel the power of{" "}
-                <span className="text-yellow-300 font-bold">Chronos</span>, the
-                primordial god of time. Focus your mind, harness your energy,
-                and make every moment count.
+                <span className="text-blue-700 font-semibold">Chronos</span>,
+                the primordial god of time. Focus your mind, harness your
+                energy, and make every moment count.
               </p>
             </div>
           </div>
@@ -70,13 +70,13 @@ export default function FocusTimerPage() {
 
         {/* Right half - Timer interface */}
         <div className="w-1/2 flex flex-col justify-center items-center px-8 py-12">
-          <div className="bg-black/90 rounded-2xl p-8 shadow-2xl border-4 border-white max-w-md w-full">
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200 max-w-md w-full">
             {/* Timer Display */}
             <div className="text-center mb-8">
-              <div className="text-8xl font-black text-red-600 drop-shadow-lg mb-4 font-mono">
+              <div className="text-8xl font-extrabold text-blue-600 mb-4 font-mono">
                 {formatTime(timeRemaining)}
               </div>
-              <div className="text-xl text-white font-bold">
+              <div className="text-xl text-slate-700 font-semibold">
                 {isCompleted
                   ? "Session Complete!"
                   : isRunning
@@ -87,7 +87,7 @@ export default function FocusTimerPage() {
 
             {/* Duration Selection */}
             <div className="mb-6">
-              <h3 className="text-lg font-bold text-yellow-300 mb-3">
+              <h3 className="text-lg font-semibold text-blue-700 mb-3">
                 Choose Duration:
               </h3>
               <div className="grid grid-cols-3 gap-2 mb-4">
@@ -97,8 +97,8 @@ export default function FocusTimerPage() {
                     onClick={() => setSelectedDuration(duration.value)}
                     className={`py-2 px-3 rounded font-bold transition-all text-sm ${
                       selectedDuration === duration.value
-                        ? "bg-red-600 text-white border-2 border-yellow-300"
-                        : "bg-gray-700 text-white hover:bg-gray-600 border-2 border-gray-600"
+                        ? "bg-blue-600 text-white border border-blue-700"
+                        : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-300"
                     }`}
                     disabled={isRunning}
                   >
@@ -115,7 +115,7 @@ export default function FocusTimerPage() {
                   onChange={(e) =>
                     setCustomMinutes(parseInt(e.target.value) || 0)
                   }
-                  className="flex-1 px-3 py-2 rounded border-2 border-gray-600 bg-gray-800 text-white font-bold"
+                  className="flex-1 px-3 py-2 rounded border border-slate-300 bg-white text-slate-900 font-medium"
                   placeholder="Custom minutes"
                   min="1"
                   max="180"
@@ -123,7 +123,7 @@ export default function FocusTimerPage() {
                 />
                 <button
                   onClick={handleCustomDuration}
-                  className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-black font-bold rounded transition-colors"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded transition-colors"
                   disabled={isRunning}
                 >
                   Set
@@ -136,31 +136,33 @@ export default function FocusTimerPage() {
               {!isRunning ? (
                 <button
                   onClick={startTimer}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded transition-colors"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded transition-colors"
                 >
                   START FOCUS
                 </button>
               ) : (
                 <button
                   onClick={pauseTimer}
-                  className="flex-1 bg-yellow-600 hover:bg-yellow-700 text-black font-bold py-3 px-6 rounded transition-colors"
+                  className="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold py-3 px-6 rounded transition-colors"
                 >
                   PAUSE
                 </button>
               )}
               <button
                 onClick={resetTimer}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded transition-colors"
+                className="flex-1 bg-white hover:bg-slate-50 text-slate-800 font-semibold py-3 px-6 rounded border border-slate-300 transition-colors"
               >
                 RESET
               </button>
             </div>
 
             {/* Task Preview Area */}
-            <div className="bg-gray-800/50 rounded-lg p-4 border-2 border-red-600/50">
-              <h4 className="text-yellow-300 font-bold mb-2">Current Tasks:</h4>
-              <div className="text-white text-sm">
-                <div className="text-gray-400 italic">
+            <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+              <h4 className="text-blue-700 font-semibold mb-2">
+                Current Tasks:
+              </h4>
+              <div className="text-slate-700 text-sm">
+                <div className="text-slate-500 italic">
                   Task integration coming soon...
                 </div>
                 {/* This will be populated with actual tasks later */}
@@ -170,9 +172,9 @@ export default function FocusTimerPage() {
             {/* Progress indicator */}
             {selectedDuration > 0 && (
               <div className="mt-4">
-                <div className="bg-gray-700 rounded-full h-2">
+                <div className="bg-slate-200 rounded-full h-2">
                   <div
-                    className="bg-gradient-to-r from-red-600 to-yellow-400 h-2 rounded-full transition-all duration-1000"
+                    className="bg-gradient-to-r from-blue-600 to-sky-400 h-2 rounded-full transition-all duration-1000"
                     style={{
                       width: `${
                         ((selectedDuration * 60 - timeRemaining) /

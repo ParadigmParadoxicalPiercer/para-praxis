@@ -29,6 +29,7 @@ model User {
   workouts      WorkoutExercise[]
   medias        Media[]
   focusSessions FocusSession[]
+  RefreshToken  RefreshToken[]
 }
 
 model Journal {
@@ -114,4 +115,15 @@ model FocusSession {
 
   User   User @relation(fields: [userId], references: [id])
   userId Int
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
 }

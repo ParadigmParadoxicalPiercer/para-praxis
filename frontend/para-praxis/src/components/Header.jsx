@@ -95,9 +95,10 @@ function ToolsDropdown() {
   const toolItemStyle = {
     padding: "11px 18px",
     fontSize: "1.18em",
-    color: "#ef2f23",
+    color: "#2563eb",
     fontWeight: "bold",
-    fontFamily: "Bebas Neue, Impact, Arial Black, sans-serif",
+    fontFamily:
+      "Quicksand, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'",
     borderRadius: "5px",
     transition: "background 0.11s, color 0.11s",
   };
@@ -121,12 +122,12 @@ function ToolsDropdown() {
                 className="w-full text-left bg-transparent border-none cursor-pointer block"
                 style={toolItemStyle}
                 onMouseEnter={(e) => {
-                  e.target.style.background = "#ef2f23";
+                  e.target.style.background = "#2563eb";
                   e.target.style.color = "#fff";
                 }}
                 onMouseLeave={(e) => {
                   e.target.style.background = "transparent";
-                  e.target.style.color = "#ef2f23";
+                  e.target.style.color = "#2563eb";
                 }}
               >
                 {tool.label}

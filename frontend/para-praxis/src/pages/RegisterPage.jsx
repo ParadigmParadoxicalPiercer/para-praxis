@@ -11,17 +11,17 @@ export default function RegisterPage() {
         className="absolute inset-0 w-fit h-fit object-cover z-0 pointer-events-none"
         draggable={false}
       />
-      <div className="absolute inset-0 bg-gradient-to-tr from-black via-red-900 to-black opacity-80 z-10 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-blue-50 to-white/0 z-10 pointer-events-none" />
       <div className="relative z-20 flex w-full items-stretch">
         <div className="w-1/2 flex flex-col justify-center items-center px-4 py-12 sm:px-8">
           <div className="max-w-lg text-center">
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white drop-shadow-lg mb-6 tracking-tight">
               Forge Your Destiny
             </h1>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-red-200 drop-shadow mb-4">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-blue-700 mb-4">
               Master Your Craft
             </h2>
-            <p className="text-lg sm:text-xl lg:text-2xl text-white/80">
+            <p className="text-lg sm:text-xl lg:text-2xl text-slate-600">
               Shape yourself with the fire of determination. Join the forge and
               craft your path to excellence.
             </p>

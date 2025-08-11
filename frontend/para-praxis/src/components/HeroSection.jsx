@@ -2,20 +2,19 @@ import React from "react";
 import { Link } from "react-router";
 
 // Example props: pass image URL via props or hardcode it here
-const HERO_BG = "/zeus-p5.png"; // Zeus background from public folder
+const HERO_BG = "/bluewhite_background.png"; // Zeus background from public folder
 
 export default function HeroSection() {
   return (
-    <section className="flex-1 relative w-full flex items-center justify-center bg-black overflow-hidden">
-      {/* Background image with Persona5 overlay */}
+    <section className="flex-1 relative w-full flex items-center justify-center bg-white overflow-hidden">
       <img
         src={HERO_BG}
-        alt="Persona5 Themed Background"
+        alt="Black-white Themed Background"
         className="absolute inset-0 w-full h-fit object-cover z-0"
         draggable={false}
       />
-      {/* Black + Red Persona5 overlay for dramatic effect */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-red-900/60 to-black/80 z-10" />
+      {/* Subtle blue gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-blue-50 to-white/0 z-10" />
       {/* Persona5 jagged border edge at bottom */}
       <svg
         className="absolute bottom-0 left-0 w-full z-20"
@@ -31,8 +30,8 @@ export default function HeroSection() {
         /> */}
         <path
           d="M0 60 L120 45 L360 55 L600 37 L900 52 L1200 42 L1440 60"
-          stroke="#e11d48"
-          strokeWidth="6"
+          stroke="#93c5fd"
+          strokeWidth="4"
           fill="none"
         />
       </svg>
@@ -41,32 +40,31 @@ export default function HeroSection() {
         <h1
           className="text-5xl md:text-7xl font-extrabold uppercase tracking-tight drop-shadow-[2px_4px_0_rgba(0,0,0,0.6)]"
           style={{
-            fontFamily: "'Bebas Neue', Impact, Arial Black, sans-serif",
-            letterSpacing: "0.08em",
+            fontFamily:
+              "Quicksand, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial",
+            letterSpacing: "0.03em",
           }}
         >
-          SPARKS
+          Build
           <br className="hidden md:inline" />
-          <span className="text-red-500 font-black persona5-highlight px-2">
-            Your Future!
-          </span>
+          <span className="text-blue-600 font-black px-2">Your Future</span>
         </h1>
-        <p className="mt-6 text-lg md:text-2xl font-semibold text-white/90 max-w-xl mx-auto persona5-shadow">
+        <p className="mt-6 text-lg md:text-2xl font-semibold text-slate-700 max-w-xl mx-auto">
           Track habits. Reflect on your journey. Achieve your goals.
           <br />
-          <span className="text-yellow-300 font-black">PARA-PRAXIS</span> have
-          your back!
+          <span className="text-blue-600 font-black">PARA-PRAXIS</span> has your
+          back.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             to="/auth/register"
-            className="rounded-md bg-red-600 hover:bg-yellow-400 hover:text-black transition-all text-white text-xl px-8 py-3 font-extrabold border-4 border-black shadow-lg uppercase tracking-wider persona5-btn"
+            className="rounded-md bg-blue-600 hover:bg-blue-700 transition-all text-white text-xl px-8 py-3 font-semibold border border-blue-700 shadow-sm tracking-wide"
           >
             Get Started
           </Link>
           <Link
             to="/auth/login"
-            className="rounded-md bg-white hover:bg-yellow-400 hover:text-black transition-all text-red-700 text-xl px-8 py-3 font-extrabold border-4 border-black shadow-lg uppercase tracking-wider persona5-btn"
+            className="rounded-md bg-white hover:bg-blue-50 transition-all text-blue-700 text-xl px-8 py-3 font-semibold border border-slate-200 shadow-sm tracking-wide"
           >
             Login
           </Link>

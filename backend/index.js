@@ -23,6 +23,7 @@ import focusRoutes from "./src/routes/focus.routes.js";
 import workoutPlanRoutes from "./src/routes/workout-plan.routes.js";
 import workoutExerciseRoutes from "./src/routes/workout-exercise.routes.js";
 import mediaRoutes from "./src/routes/media.routes.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use(helmetConfig);
 app.use(securityHeaders);
 app.use(sanitizeRequest);
 
+app.use(cookieParser());
 // ตั้งค่า CORS
 app.use(cors(corsOptions));
 

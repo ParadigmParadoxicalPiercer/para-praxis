@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 
 export default function AppLayout() {
   return (
-    <div className="flex flex-col min-h-screen bg-black">
+    <div className="flex flex-col min-h-screen bg-[var(--surface-2)]">
       <Header />
       <main className="flex-1 flex flex-col">
         <Outlet />
@@ -21,11 +21,11 @@ export default function AppLayout() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="dark"
+        theme="light"
         toastStyle={{
-          backgroundColor: "#1a1a1a",
-          color: "#ffffff",
-          border: "2px solid #dc2626",
+          backgroundColor: "#ffffff",
+          color: "#0f172a",
+          border: "1px solid #e2e8f0",
         }}
       />
     </div>
