@@ -23,8 +23,8 @@ router.post("/register", validateBody(authSchemas.register), register);
 // POST /api/auth/login - เข้าสู่ระบบ (Public)
 router.post("/login", validateBody(authSchemas.login), login);
 
-// POST /api/auth/refresh - ต่ออายุ access token (Private)
-router.post("/refresh", requireAuth, refreshToken);
+// POST /api/auth/refresh - ต่ออายุ access token (Public - uses httpOnly refresh cookie)
+router.post("/refresh", refreshToken);
 
 // GET /api/auth/me - ดูข้อมูลส่วนตัวผู้ใช้ปัจจุบัน (Private)
 router.get("/me", requireAuth, getCurrentUser);

@@ -93,7 +93,9 @@ export const VALIDATION_RULES = {
   EMAIL_MAX_LENGTH: 255,
   TITLE_MAX_LENGTH: 200,
   DESCRIPTION_MAX_LENGTH: 1000,
-  CONTENT_MAX_LENGTH: 10000,
+  CONTENT_MAX_LENGTH: 200000, // increased for long journal entries
+  // Increased to allow long-form journal content after switching to LongText
+  // NOTE: Adjust frontend validation accordingly if added.
 };
 
 // File Upload

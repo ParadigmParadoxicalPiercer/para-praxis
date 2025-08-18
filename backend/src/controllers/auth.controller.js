@@ -14,7 +14,8 @@ import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../config/constants.js";
 import responseHandler from "../utils/response.js";
 import logger from "../utils/logger.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwtUtils from "../utils/jwt.utils.js";
+import config from "../config/env.js";
 
 /**
  * ลงทะเบียนผู้ใช้ใหม่
@@ -70,33 +71,32 @@ export const login = asyncHandler(async (req, res, next) => {
   }
 
   // สร้าง accessToken และ refreshToken
-  const accessToken = jwt.sign(
-    { userId: user.id },
-    process.env.ACCESS_SECRET || "access_secret_key",
-    { expiresIn: "15s" }
-  );
-
-  const refreshToken = jwt.sign(
-    { userId: user.id },
-    process.env.REFRESH_SECRET || "refresh_secret_key",
-    { expiresIn: "20s" } // only for demonstration purposes
-  );
+  // Use centralized JWT utils so signing/verification share the same secret, issuer, audience
+  const accessToken = jwtUtils.generateAccessToken(user);
+  const refreshToken = jwtUtils.generateRefreshToken(user);
 
   // บันทึก refreshToken ในฐานข้อมูล
+  // Align DB expiry with token's exp claim
+  const decodedRefresh = jwtUtils.decodeToken(refreshToken);
+  const refreshExp = decodedRefresh?.payload?.exp
+    ? new Date(decodedRefresh.payload.exp * 1000)
+    : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
   await prisma.refreshToken.create({
     data: {
       token: refreshToken,
       userId: user.id,
-      expiresAt: new Date(Date.now() + 20 * 1000), // 20 seconds
+      expiresAt: refreshExp,
     },
   });
 
   // ตั้งค่า cookie สำหรับ refreshToken
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    sameSite: "Strict",
-    secure: true,
-    maxAge: 30 * 24 * 60 * 60 * 1000, //1 month
+    sameSite: "Lax",
+    secure: config.isProduction, // allow in dev over http
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    path: "/",
   });
 
   logger.info("เข้าสู่ระบบสำเร็จ", { userId: user.id, email });
@@ -140,20 +140,20 @@ export const refreshToken = asyncHandler(async (req, res, next) => {
   // ตรวจสอบและถอดรหัส refreshToken
   let payload;
   try {
-    payload = jwt.verify(
-      refreshToken,
-      process.env.REFRESH_SECRET || "refresh_secret_key"
-    );
+    payload = jwtUtils.verifyToken(refreshToken);
+    if (payload.type !== "refresh") {
+      return next(createAuthError("Invalid refresh token type"));
+    }
   } catch (err) {
     return next(createAuthError("Invalid refresh token"));
   }
 
   // สร้าง accessToken ใหม่
-  const accessToken = jwt.sign(
-    { userId: payload.userId },
-    process.env.ACCESS_SECRET || "access_secret_key",
-    { expiresIn: "15s" }
-  );
+  const accessToken = jwtUtils.generateAccessToken({
+    id: payload.userId,
+    email: payload.email,
+    name: payload.name,
+  });
 
   return responseHandler.success(
     res,
