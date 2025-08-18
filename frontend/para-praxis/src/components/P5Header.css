@@ -160,6 +160,18 @@
   border-color: #93c5fd;
 }
 
+/* Profile button: default blue, darker blue on hover */
+.comic-btn.profile-btn {
+  background: #2563eb; /* default blue */
+  color: #ffffff;
+  border: 1px solid #1d4ed8;
+}
+.comic-btn.profile-btn:hover {
+  background: #1d4ed8; /* darker blue */
+  color: #ffffff;
+  border-color: #1d4ed8;
+}
+
 /* Responsive fixes */
 @media (max-width: 900px) {
   .logo-p5 {

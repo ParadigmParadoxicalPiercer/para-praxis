@@ -1,78 +1,27 @@
-// API service for user profile and dashboard data
-const API_BASE = "/api";
+// API service for user profile and dashboard data using shared axios instance
+import api from "../configs/axios";
 
 // Get user profile
 export async function getUserProfile() {
-  const token = localStorage.getItem("accessToken");
-
-  const response = await fetch(`${API_BASE}/users/profile`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch user profile");
-  }
-
-  return await response.json();
+  const res = await api.get("/users/profile");
+  return res.data; // backend wraps in { status, message, data }
 }
 
 // Update user profile
 export async function updateUserProfile(profileData) {
-  const token = localStorage.getItem("accessToken");
-
-  const response = await fetch(`${API_BASE}/users/profile`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(profileData),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to update profile");
-  }
-
-  return await response.json();
+  const res = await api.put("/users/profile", profileData);
+  return res.data;
 }
 
 // Get focus session statistics
 export async function getFocusStats() {
-  const token = localStorage.getItem("accessToken");
-
-  const response = await fetch(`${API_BASE}/focus/stats`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch focus stats");
-  }
-
-  return await response.json();
+  const res = await api.get("/focus/stats");
+  return res.data;
 }
 
 // Get tasks statistics
 export async function getTasksStats() {
-  const token = localStorage.getItem("accessToken");
-
-  const response = await fetch(`${API_BASE}/tasks`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch tasks");
-  }
-
-  const data = await response.json();
+  const { data } = await api.get("/tasks");
   const tasks = data.data.tasks || [];
 
   return {
@@ -84,20 +33,7 @@ export async function getTasksStats() {
 
 // Get workout plans statistics
 export async function getWorkoutStats() {
-  const token = localStorage.getItem("accessToken");
-
-  const response = await fetch(`${API_BASE}/workout-plans`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch workout plans");
-  }
-
-  const data = await response.json();
+  const { data } = await api.get("/workout-plans");
   const workoutPlans = data.data.workoutPlans || [];
 
   // Calculate consecutive days (simplified - you might want to enhance this)

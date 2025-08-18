@@ -1,4 +1,9 @@
 import axios from "axios";
+import {
+  getAccessToken,
+  setAccessToken,
+  clearAccessToken,
+} from "../auth/token";
 
 const instance = axios.create({
   baseURL: "http://localhost:3333/api",
@@ -7,7 +12,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = getAccessToken();
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
@@ -22,24 +27,28 @@ instance.interceptors.response.use(
   (res) => res,
   async (error) => {
     const originalRequest = error.config;
-    // ถ้าคืน 401
-    if (error.response.status === 401) {
-      // Handle token refresh logic here
+    // Only retry 401s once, and don't retry refresh requests
+    if (
+      error?.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes("/auth/refresh")
+    ) {
+      originalRequest._retry = true;
       try {
-        const response = await instance.get("auth/refresh-token");
-        // ถ้ารีเฟรชสำเร็จ ให้เก็บ access token ใหม่
-
-        const newAccessToken = response.data.accessToken;
-        // ตั้งค่า access token ใหม่ใน localStorage
-        localStorage.setItem("accessToken", newAccessToken);
-        // อัพเดต header ของ request เดิม
+        const response = await instance.post("/auth/refresh");
+        const newAccessToken = response?.data?.data?.accessToken;
+        if (!newAccessToken)
+          throw new Error("No access token in refresh response");
+        setAccessToken(newAccessToken);
         originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-        // Retry the original request with the new token
         return instance(originalRequest);
-      } catch (error) {
-        localStorage.removeItem("accessToken");
-        return Promise.reject(error);
+      } catch (refreshError) {
+        clearAccessToken();
+        return Promise.reject(refreshError);
       }
     }
+    return Promise.reject(error);
   }
 );
+
+export default instance;

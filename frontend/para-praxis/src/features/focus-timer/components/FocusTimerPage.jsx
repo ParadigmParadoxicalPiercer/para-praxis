@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useFocusTimer } from "../hooks/useFocusTimer";
+import { useTasksStore } from "../../../stores/useTasksStore";
 
 export default function FocusTimerPage() {
   const {
@@ -15,6 +16,31 @@ export default function FocusTimerPage() {
   } = useFocusTimer();
 
   const [customMinutes, setCustomMinutes] = useState(25);
+  // Tasks integration
+  const tasksStore = useTasksStore();
+  const { tasks, load, getUrgentTasks, loading: tasksLoading } = tasksStore;
+  const urgent = getUrgentTasks(3);
+
+  useEffect(() => {
+    if (!tasks || tasks.length === 0) {
+      load();
+    }
+  }, [tasks, load]);
+
+  // Ensure when navigating here from a scrolled page (e.g., profile) we start at top
+  useEffect(() => {
+    // Use instant jump; could change to smooth if preferred
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, []);
+
+  const formatDue = (iso) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   const predefinedDurations = [
     { label: "15 min", value: 15 },
@@ -25,10 +51,43 @@ export default function FocusTimerPage() {
   ];
 
   const handleCustomDuration = () => {
-    if (customMinutes > 0 && customMinutes <= 180) {
+    if (customMinutes > 0 && customMinutes <= 640) {
       setSelectedDuration(customMinutes);
     }
   };
+  // Wheel scroll minutes (prevent whole page scroll while hovering input)
+  const minutesInputRef = useRef(null);
+  useEffect(() => {
+    const el = minutesInputRef.current;
+    if (!el) return;
+    const onWheel = (e) => {
+      if (!minutesInputRef.current) return;
+      const hovered =
+        minutesInputRef.current === e.target ||
+        minutesInputRef.current.contains(e.target);
+      if (!hovered) return; // only intercept when pointer over input
+      e.preventDefault();
+      e.stopPropagation();
+      const direction = Math.sign(e.deltaY); // positive when scrolling down
+      setCustomMinutes((prev) => {
+        let next = prev - direction; // scrolling up (deltaY negative) increases minutes
+        if (next < 1) next = 1;
+        if (next > 640) next = 640;
+        return next;
+      });
+    };
+    // Add listener on window with capture so we catch before default scroll; passive:false to allow preventDefault
+    window.addEventListener("wheel", onWheel, {
+      capture: true,
+      passive: false,
+    });
+    return () =>
+      window.removeEventListener("wheel", onWheel, { capture: true });
+  }, []);
+
+  // Adjust timer font size when hours appear (HH:MM:SS gets wider)
+  const timeDisplay = formatTime(timeRemaining);
+  const isHourMode = timeDisplay.length > 5; // length 8 like 01:00:00
 
   return (
     <div className="flex-1 relative w-full flex overflow-hidden items-stretch">
@@ -36,7 +95,7 @@ export default function FocusTimerPage() {
       <img
         src="/timer.png"
         alt="Timer"
-  className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
+        className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
         draggable={false}
       />
 
@@ -73,8 +132,17 @@ export default function FocusTimerPage() {
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200 max-w-md w-full">
             {/* Timer Display */}
             <div className="text-center mb-8">
-              <div className="text-8xl font-extrabold text-blue-600 mb-4 font-mono">
-                {formatTime(timeRemaining)}
+              {/* Fixed-height container to eliminate vertical shift when switching formats */}
+              <div className="h-28 sm:h-32 lg:h-36 flex items-center justify-center mb-4 select-none">
+                <div
+                  className={`font-extrabold text-blue-600 font-mono tracking-tight leading-none ${
+                    isHourMode
+                      ? "text-6xl sm:text-7xl lg:text-7xl"
+                      : "text-8xl sm:text-8xl lg:text-9xl"
+                  }`}
+                >
+                  {timeDisplay}
+                </div>
               </div>
               <div className="text-xl text-slate-700 font-semibold">
                 {isCompleted
@@ -112,13 +180,16 @@ export default function FocusTimerPage() {
                 <input
                   type="number"
                   value={customMinutes}
-                  onChange={(e) =>
-                    setCustomMinutes(parseInt(e.target.value) || 0)
-                  }
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value) || 0;
+                    if (v > 640) return setCustomMinutes(640);
+                    setCustomMinutes(v);
+                  }}
+                  ref={minutesInputRef}
                   className="flex-1 px-3 py-2 rounded border border-slate-300 bg-white text-slate-900 font-medium"
                   placeholder="Custom minutes"
                   min="1"
-                  max="180"
+                  max="640"
                   disabled={isRunning}
                 />
                 <button
@@ -128,6 +199,11 @@ export default function FocusTimerPage() {
                 >
                   Set
                 </button>
+                {customMinutes > 60 && (
+                  <div className="text-xs text-slate-500 font-medium self-center ml-1 whitespace-nowrap">
+                    {Math.floor(customMinutes / 60)}h {customMinutes % 60}m
+                  </div>
+                )}
               </div>
             </div>
 
@@ -158,14 +234,92 @@ export default function FocusTimerPage() {
 
             {/* Task Preview Area */}
             <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-              <h4 className="text-blue-700 font-semibold mb-2">
-                Current Tasks:
+              <h4 className="text-blue-700 font-semibold mb-3 flex items-center justify-between">
+                <span>Urgent Tasks</span>
+                <span className="text-xs font-medium text-slate-500">
+                  {tasksLoading
+                    ? "Loading..."
+                    : urgent.length
+                    ? `${urgent.length} shown`
+                    : "None"}
+                </span>
               </h4>
-              <div className="text-slate-700 text-sm">
-                <div className="text-slate-500 italic">
-                  Task integration coming soon...
-                </div>
-                {/* This will be populated with actual tasks later */}
+              <div className="space-y-2">
+                {tasksLoading && (
+                  <div className="text-slate-500 text-sm italic">
+                    Loading tasks...
+                  </div>
+                )}
+                {!tasksLoading && urgent.length === 0 && (
+                  <div className="text-slate-500 text-sm italic">
+                    No high-priority upcoming tasks.
+                  </div>
+                )}
+                {urgent.map((t) => {
+                  const dueSoon =
+                    t.dueDate &&
+                    new Date(t.dueDate) <
+                      new Date(Date.now() + 1000 * 60 * 60 * 24);
+                  return (
+                    <div
+                      key={t.id}
+                      className="flex items-start gap-3 bg-white rounded border border-slate-200 px-3 py-2 shadow-sm"
+                    >
+                      <div
+                        className={`mt-1 h-3 w-3 rounded-full ${
+                          t.priority === 3
+                            ? "bg-red-500"
+                            : t.priority === 2
+                            ? "bg-amber-500"
+                            : "bg-green-500"
+                        }`}
+                        title={`Priority ${t.priority}`}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-slate-800 text-sm truncate">
+                          {t.title}
+                        </div>
+                        {t.dueDate && (
+                          <div className="text-xs text-slate-500 flex gap-2 flex-wrap">
+                            <span className="inline-flex items-center gap-1">
+                              <span className="uppercase tracking-wide">
+                                Due
+                              </span>{" "}
+                              {formatDue(t.dueDate)}
+                            </span>
+                            {dueSoon && (
+                              <span className="text-red-600 font-medium">
+                                Soon
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      {t.dueDate && (
+                        <div className="text-[10px] font-medium px-2 py-1 rounded bg-slate-100 text-slate-600">
+                          {Math.max(
+                            0,
+                            Math.ceil(
+                              (new Date(t.dueDate) - Date.now()) /
+                                (1000 * 60 * 60 * 24)
+                            )
+                          )}
+                          d
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+                {urgent.length > 0 && (
+                  <div className="pt-1 text-right">
+                    <a
+                      href="/tasks"
+                      className="text-xs font-semibold text-blue-600 hover:text-blue-700"
+                    >
+                      View all tasks →
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
 

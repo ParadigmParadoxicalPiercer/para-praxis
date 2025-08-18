@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { login as loginService } from "../services/auth.service";
 import { loginSchema } from "../utils/validationSchemas";
 import { authToast } from "../utils/toast";
+import { setAccessToken } from "../auth/token";
+// Auth context user update handled by caller via onSuccess callback
 
 export const useLoginStore = create((set, get) => ({
   form: {
@@ -57,8 +59,7 @@ export const useLoginStore = create((set, get) => ({
       const accessToken = response?.data?.accessToken;
       console.log("Access Token:", accessToken);
       if (accessToken) {
-        localStorage.setItem("accessToken", accessToken);
-        console.log("Access token stored in localStorage");
+        setAccessToken(accessToken);
       } else {
         console.error(" Login success but no access token received");
         throw new Error("Login successful but no access token received");
@@ -68,9 +69,8 @@ export const useLoginStore = create((set, get) => ({
       get().resetForm();
 
       if (onSuccess) {
-        setTimeout(() => {
-          onSuccess();
-        }, 3000);
+        const user = response?.data?.user || null;
+        setTimeout(() => onSuccess(user), 250); // quicker redirect
       }
       // Store the JWT token
       // if (response.token) {

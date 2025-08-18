@@ -20,7 +20,7 @@ export default function RegisterForm() {
         </div>
       )}
       <div className="mb-3">
-        <label className="block font-bold text-white mb-1" htmlFor="email">
+        <label className="block font-bold text-slate-700 mb-1" htmlFor="email">
           Email
         </label>
         <input
@@ -41,7 +41,10 @@ export default function RegisterForm() {
         )}
       </div>
       <div className="mb-3">
-        <label className="block font-bold text-white mb-1" htmlFor="username">
+        <label
+          className="block font-bold text-slate-700 mb-1"
+          htmlFor="username"
+        >
           Username
         </label>
         <input
@@ -62,7 +65,10 @@ export default function RegisterForm() {
         )}
       </div>
       <div className="mb-3">
-        <label className="block font-bold text-white mb-1" htmlFor="password">
+        <label
+          className="block font-bold text-slate-700 mb-1"
+          htmlFor="password"
+        >
           Password
         </label>
         <input
@@ -83,7 +89,10 @@ export default function RegisterForm() {
         )}
       </div>
       <div className="mb-5">
-        <label className="block font-bold text-white mb-1" htmlFor="confirm">
+        <label
+          className="block font-bold text-slate-700 mb-1"
+          htmlFor="confirm"
+        >
           Confirm Password
         </label>
         <input

@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./P5Header.css";
+import { useAuth } from "../auth/AuthProvider";
+import { clearAccessToken } from "../auth/token";
 
 // ===== CONFIGURATION =====
 const TOOL_LINKS = [
@@ -11,67 +13,6 @@ const TOOL_LINKS = [
 ];
 
 // ===== CUSTOM HOOKS =====
-function useAuth() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const checkAuthStatus = () => {
-      const token = localStorage.getItem("token");
-      setIsLoggedIn(!!token);
-
-      if (token) {
-        const userData = localStorage.getItem("user");
-        if (userData) {
-          try {
-            setUser(JSON.parse(userData));
-          } catch (error) {
-            console.error("Error parsing user data:", error);
-            setUser(null);
-          }
-        }
-      } else {
-        setUser(null);
-      }
-    };
-
-    checkAuthStatus();
-    const interval = setInterval(checkAuthStatus, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === "token") {
-        const token = e.newValue;
-        setIsLoggedIn(!!token);
-        if (!token) {
-          setUser(null);
-        }
-      }
-      if (e.key === "user" && e.newValue) {
-        try {
-          setUser(JSON.parse(e.newValue));
-        } catch (error) {
-          console.error("Error parsing user data:", error);
-        }
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setIsLoggedIn(false);
-    setUser(null);
-    window.location.href = "/";
-  };
-
-  return { isLoggedIn, user, handleLogout };
-}
 
 // ===== HEADER COMPONENTS =====
 function HeaderLogo() {
@@ -143,34 +84,38 @@ function ToolsDropdown() {
 function AuthSection({ isLoggedIn, user, onLogout }) {
   if (isLoggedIn) {
     return (
-      <>
-        <UserGreeting user={user} />
+      <div className="flex items-center gap-3">
+        <LoggedInText user={user} />
         <ProfileButton />
         <LogoutButton onLogout={onLogout} />
-      </>
+      </div>
     );
   }
-
   return (
-    <>
+    <div className="flex items-center gap-3">
       <LoginButton />
       <RegisterButton />
-    </>
+    </div>
   );
 }
 
 // ===== AUTH SUB-COMPONENTS =====
-function UserGreeting({ user }) {
+function LoggedInText({ user }) {
   return (
-    <span className="user-greeting text-white font-bold mr-4">
-      Welcome, {user?.name || "User"}!
+    <span className="user-greeting font-semibold text-blue-700 whitespace-nowrap text-sm md:text-base">
+      Hi, {user?.name || "User"}
     </span>
   );
 }
 
+// Profile button removed for simpler, newbie-style header when logged in
 function ProfileButton() {
   return (
-    <Link className="comic-btn profile-btn" to="/user">
+    <Link
+      className="comic-btn profile-btn bg-blue-600 hover:bg-blue-700 text-white border border-blue-700 shadow-sm"
+      style={{ letterSpacing: "2px" }}
+      to="/user"
+    >
       PROFILE
     </Link>
   );
@@ -178,7 +123,11 @@ function ProfileButton() {
 
 function LogoutButton({ onLogout }) {
   return (
-    <button className="comic-btn logout-btn" onClick={onLogout}>
+    <button
+      className="comic-btn logout-btn bg-slate-200 hover:bg-slate-300 text-slate-800 border border-slate-300"
+      style={{ letterSpacing: "2px" }}
+      onClick={onLogout}
+    >
       LOGOUT
     </button>
   );
@@ -202,7 +151,19 @@ function RegisterButton() {
 
 // ===== MAIN HEADER COMPONENT =====
 export default function P5Header() {
-  const { isLoggedIn, user, handleLogout } = useAuth();
+  const auth = useAuth();
+  const isLoggedIn = !!auth.user;
+  const user = auth.user;
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    try {
+      await auth.logout();
+    } finally {
+      clearAccessToken();
+      // navigate to login page (or home) without full reload
+      navigate("/auth/login", { replace: true });
+    }
+  };
 
   return (
     <header className="p5-header">

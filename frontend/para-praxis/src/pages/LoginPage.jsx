@@ -6,13 +6,13 @@ export default function LoginPage() {
     <div className="flex-1 relative w-full flex overflow-hidden items-stretch">
       {/* Background PNG image */}
       <img
-        src="/ganesh.png"
+        src="/login.png"
         alt="Background"
         className="absolute inset-0 w-fit h-fit z-0 pointer-events-none"
         draggable={false}
       />
       {/* Light blue overlay */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-blue-50 to-white/0 z-10 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-blue-300 to-white/0 z-10 pointer-events-none" />
 
       <div className="relative z-20 flex w-full items-stretch">
         {/* Left half with wording */}
