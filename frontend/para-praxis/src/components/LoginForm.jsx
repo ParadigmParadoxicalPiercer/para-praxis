@@ -1,3 +1,4 @@
+// Brief: Login form using Zustand store and AuthProvider; navigates to /user on success.
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";

@@ -22,7 +22,12 @@ export async function getFocusStats() {
 // Get tasks statistics
 export async function getTasksStats() {
   const { data } = await api.get("/tasks");
-  const tasks = data.data.tasks || [];
+  const payload = data?.data;
+  const tasks = Array.isArray(payload)
+    ? payload
+    : Array.isArray(payload?.tasks)
+    ? payload.tasks
+    : [];
 
   return {
     total: tasks.length,

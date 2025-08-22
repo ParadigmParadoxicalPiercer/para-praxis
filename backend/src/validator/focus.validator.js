@@ -5,10 +5,7 @@ export const createFocusSchema = yup.object({
     .number()
     .required("Duration is required")
     .min(1, "Duration must be at least 1 minute"),
-  task: yup
-    .string()
-    .required("Task is required")
-    .min(1, "Task cannot be empty"),
+  task: yup.string().optional().min(1, "Task cannot be empty"),
   notes: yup.string().optional(),
   completedAt: yup.date().optional(),
 });

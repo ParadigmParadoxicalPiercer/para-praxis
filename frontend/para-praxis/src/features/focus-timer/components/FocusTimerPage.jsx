@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import useSound from "use-sound";
 import { useFocusTimer } from "../hooks/useFocusTimer";
 import { useTasksStore } from "../../../stores/useTasksStore";
 
@@ -16,10 +17,92 @@ export default function FocusTimerPage() {
   } = useFocusTimer();
 
   const [customMinutes, setCustomMinutes] = useState(25);
+
+  // Global sound controls
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [volume, setVolume] = useState(0.6);
+  const lastVolumeRef = useRef(0.6);
+
+  // Persist sound preferences
+  useEffect(() => {
+    try {
+      const savedEnabled = localStorage.getItem("timerSoundEnabled");
+      const savedVolume = localStorage.getItem("timerSoundVolume");
+      if (savedEnabled !== null) setSoundEnabled(savedEnabled === "true");
+      if (savedVolume !== null) {
+        const v = parseFloat(savedVolume);
+        if (!Number.isNaN(v)) setVolume(Math.max(0, Math.min(1, v)));
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+  useEffect(() => {
+    try {
+      localStorage.setItem("timerSoundEnabled", String(soundEnabled));
+      localStorage.setItem("timerSoundVolume", String(volume));
+    } catch {
+      // ignore
+    }
+  }, [soundEnabled, volume]);
+
+  // Sounds via use-sound (public/sound/*.mp3)
+  const [playStart] = useSound("/sound/timerstart.mp3", {
+    volume,
+    interrupt: true,
+    preload: true,
+    soundEnabled,
+  });
+  const [playPause] = useSound("/sound/timerpause.mp3", {
+    volume,
+    interrupt: true,
+    preload: true,
+    soundEnabled,
+  });
+  const [playResume] = useSound("/sound/timerresume.mp3", {
+    volume,
+    interrupt: true,
+    preload: true,
+    soundEnabled,
+  });
+  const [playReset] = useSound("/sound/timerreset.mp3", {
+    volume,
+    interrupt: true,
+    preload: true,
+    soundEnabled,
+  });
+  const [playChime, { stop: stopChime }] = useSound("/sound/chime.mp3", {
+    volume,
+    interrupt: true,
+    preload: true,
+    soundEnabled,
+  });
+
   // Tasks integration
   const tasksStore = useTasksStore();
   const { tasks, load, getUrgentTasks, loading: tasksLoading } = tasksStore;
   const urgent = getUrgentTasks(3);
+
+  // Local UI state for fade-out when completing a task from the timer view
+  const [completing, setCompleting] = useState({});
+
+  const handleComplete = (task) => {
+    if (completing[task.id]) return; // already animating
+    // Start strike-through + fade-out
+    setCompleting((prev) => ({ ...prev, [task.id]: true }));
+    // After animation, actually toggle completion in store so urgent list refreshes
+    setTimeout(async () => {
+      try {
+        await tasksStore.toggle(task);
+      } finally {
+        // Clean up local state just in case (usually the item will unmount)
+        setCompleting((prev) => {
+          const { [task.id]: _omit, ...rest } = prev;
+          return rest;
+        });
+      }
+    }, 700); // keep in sync with CSS duration
+  };
 
   useEffect(() => {
     if (!tasks || tasks.length === 0) {
@@ -88,6 +171,22 @@ export default function FocusTimerPage() {
   // Adjust timer font size when hours appear (HH:MM:SS gets wider)
   const timeDisplay = formatTime(timeRemaining);
   const isHourMode = timeDisplay.length > 5; // length 8 like 01:00:00
+  const isPaused =
+    !isRunning &&
+    !isCompleted &&
+    timeRemaining > 0 &&
+    timeRemaining < selectedDuration * 60;
+
+  // Play chime when a session completes
+  useEffect(() => {
+    if (isCompleted) {
+      try {
+        playChime();
+      } catch {
+        // ignore
+      }
+    }
+  }, [isCompleted, playChime]);
 
   return (
     <div className="flex-1 relative w-full flex overflow-hidden items-stretch">
@@ -102,9 +201,9 @@ export default function FocusTimerPage() {
       {/* Light blue overlay */}
       <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-blue-50 to-white/0 z-10 pointer-events-none" />
 
-      <div className="relative z-20 flex w-full items-stretch">
+      <div className="relative z-20 flex flex-col md:flex-row w-full items-stretch">
         {/* Left half - Chronos inspiration */}
-        <div className="w-1/2 flex flex-col justify-center items-center px-8 py-12">
+        <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-8 py-12">
           <div className="max-w-lg text-center">
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-slate-800 mb-6 tracking-tight">
               TIME IS
@@ -128,7 +227,7 @@ export default function FocusTimerPage() {
         </div>
 
         {/* Right half - Timer interface */}
-        <div className="w-1/2 flex flex-col justify-center items-center px-8 py-12">
+  <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-8 py-12">
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200 max-w-md w-full">
             {/* Timer Display */}
             <div className="text-center mb-8">
@@ -211,22 +310,58 @@ export default function FocusTimerPage() {
             <div className="flex gap-3 mb-6">
               {!isRunning ? (
                 <button
-                  onClick={startTimer}
+                  onClick={() => {
+                    try {
+                      if (isPaused) {
+                        playResume();
+                      } else {
+                        playStart();
+                      }
+                    } catch {
+                      // ignore
+                    }
+                    startTimer();
+                  }}
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded transition-colors"
                 >
-                  START FOCUS
+                  {isPaused ? "RESUME" : "START FOCUS"}
                 </button>
               ) : (
                 <button
-                  onClick={pauseTimer}
+                  onClick={() => {
+                    try {
+                      playPause();
+                    } catch {
+                      // ignore
+                    }
+                    pauseTimer();
+                  }}
                   className="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold py-3 px-6 rounded transition-colors"
                 >
                   PAUSE
                 </button>
               )}
               <button
-                onClick={resetTimer}
-                className="flex-1 bg-white hover:bg-slate-50 text-slate-800 font-semibold py-3 px-6 rounded border border-slate-300 transition-colors"
+                onClick={() => {
+                  // Stop any playing audio and reset
+                  try {
+                    stopChime();
+                  } catch {
+                    // ignore
+                  }
+                  try {
+                    playReset();
+                  } catch {
+                    // ignore
+                  }
+                  resetTimer();
+                }}
+                disabled={isRunning}
+                className={`flex-1 font-semibold py-3 px-6 rounded border transition-colors ${
+                  isRunning
+                    ? "bg-white text-slate-400 border-slate-200 cursor-not-allowed"
+                    : "bg-white hover:bg-slate-50 text-slate-800 border-slate-300"
+                }`}
               >
                 RESET
               </button>
@@ -263,8 +398,38 @@ export default function FocusTimerPage() {
                   return (
                     <div
                       key={t.id}
-                      className="flex items-start gap-3 bg-white rounded border border-slate-200 px-3 py-2 shadow-sm"
+                      className={`flex items-start gap-3 bg-white rounded border border-slate-200 px-3 py-2 shadow-sm transition-all duration-700 ease-out ${
+                        completing[t.id] ? "opacity-0 translate-y-1" : ""
+                      }`}
                     >
+                      {/* Complete button */}
+                      <button
+                        onClick={() => handleComplete(t)}
+                        title="Mark as done"
+                        className={`mt-0.5 h-5 w-5 rounded-full border flex items-center justify-center transition-colors ${
+                          completing[t.id]
+                            ? "bg-green-600 border-green-600 text-white"
+                            : "border-slate-300 hover:border-green-600 hover:text-green-600"
+                        }`}
+                        aria-label={`Complete ${t.title}`}
+                      >
+                        {completing[t.id] ? (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="h-4 w-4"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M2.25 12a9.75 9.75 0 1119.5 0 9.75 9.75 0 01-19.5 0zm14.03-2.28a.75.75 0 10-1.06-1.06l-4.72 4.72-1.72-1.72a.75.75 0 10-1.06 1.06l2.25 2.25c.3.3.79.3 1.06 0l5.25-5.25z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        ) : (
+                          <span className="h-2 w-2 rounded-full bg-transparent" />
+                        )}
+                      </button>
                       <div
                         className={`mt-1 h-3 w-3 rounded-full ${
                           t.priority === 3
@@ -276,7 +441,11 @@ export default function FocusTimerPage() {
                         title={`Priority ${t.priority}`}
                       />
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-slate-800 text-sm truncate">
+                        <div
+                          className={`font-semibold text-slate-800 text-sm truncate ${
+                            completing[t.id] ? "line-through text-slate-400" : ""
+                          }`}
+                        >
                           {t.title}
                         </div>
                         {t.dueDate && (
@@ -320,6 +489,50 @@ export default function FocusTimerPage() {
                     </a>
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Sound controls (moved below tasks) */}
+            <div className="mt-4 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  // Toggle mute without losing previous volume
+                  setSoundEnabled((v) => {
+                    const next = !v;
+                    if (!next) {
+                      // going to OFF: remember last non-zero volume
+                      if (volume > 0) lastVolumeRef.current = volume;
+                    } else {
+                      // going to ON: if volume is 0, restore previous
+                      if (volume === 0) setVolume(lastVolumeRef.current || 0.6);
+                    }
+                    return next;
+                  });
+                }}
+                className={`h-8 px-2 rounded border text-xs font-medium leading-none transition-colors ${
+                  soundEnabled
+                    ? "bg-blue-600 text-white border-blue-700 hover:bg-blue-700"
+                    : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"
+                }`}
+                aria-pressed={soundEnabled}
+                title={soundEnabled ? "Mute sounds" : "Unmute sounds"}
+              >
+                {soundEnabled ? "Sound toggle: On" : "Sound toggle: Off"}
+              </button>
+              <div className="flex items-center gap-2 flex-1">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={Math.round(volume * 100)}
+                  onChange={(e) => setVolume((+e.target.value || 0) / 100)}
+                  className="w-full h-2 accent-blue-600"
+                  aria-label="Volume"
+                />
+                <span className="text-xs text-slate-600 w-10 text-right">
+                  {Math.round(volume * 100)}%
+                </span>
               </div>
             </div>
 

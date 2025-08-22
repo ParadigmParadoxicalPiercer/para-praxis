@@ -149,6 +149,7 @@ export const userSchemas = {
     name: baseSchemas.name.optional(),
     email: baseSchemas.email.optional(),
     phone: baseSchemas.phone,
+  personalGoals: yup.string().max(5000).nullable(),
     bio: yup.string().max(500, "Bio must not exceed 500 characters").nullable(),
   }),
 

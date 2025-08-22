@@ -1,3 +1,4 @@
+// Brief: CRUD for workout plans; includes exercises and logs in responses.
 import prisma from "../config/prisma.js";
 import { createError, createNotFoundError } from "../utils/createError.js";
 import { successResponse } from "../utils/responseHelpers.js";
@@ -7,7 +8,7 @@ export const workoutPlanController = {
   // Create a new workout plan
   createWorkoutPlan: async (req, res, next) => {
     try {
-      const { name, week, description } = req.body;
+  const { name, week, description, equipment, goal } = req.body;
       const userId = req.user.id;
 
       const workoutPlan = await prisma.workoutPlan.create({
@@ -16,6 +17,8 @@ export const workoutPlanController = {
           week,
           description,
           userId,
+          equipment,
+          goal,
         },
         include: {
           exercises: {
@@ -26,6 +29,10 @@ export const workoutPlanController = {
               reps: true,
               sets: true,
               completed: true,
+              logs: {
+                select: { id: true, completedAt: true },
+                orderBy: { completedAt: "desc" },
+              },
             },
           },
         },
@@ -75,6 +82,10 @@ export const workoutPlanController = {
               reps: true,
               sets: true,
               completed: true,
+              logs: {
+                select: { id: true, completedAt: true },
+                orderBy: { completedAt: "desc" },
+              },
             },
           },
         },
@@ -132,6 +143,10 @@ export const workoutPlanController = {
               reps: true,
               sets: true,
               completed: true,
+              logs: {
+                select: { id: true, completedAt: true },
+                orderBy: { completedAt: "desc" },
+              },
             },
           },
         },
@@ -156,7 +171,7 @@ export const workoutPlanController = {
     try {
       const workoutPlanId = parseInt(req.params.id);
       const userId = req.user.id;
-      const { name, week, description } = req.body;
+  const { name, week, description, equipment, goal } = req.body;
 
       // Check if workout plan exists and belongs to user
       const existingPlan = await prisma.workoutPlan.findFirst({
@@ -172,11 +187,7 @@ export const workoutPlanController = {
 
       const workoutPlan = await prisma.workoutPlan.update({
         where: { id: workoutPlanId },
-        data: {
-          name,
-          week,
-          description,
-        },
+  data: { name, week, description, equipment, goal },
         include: {
           exercises: {
             select: {

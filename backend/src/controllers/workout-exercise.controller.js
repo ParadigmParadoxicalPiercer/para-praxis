@@ -1,3 +1,4 @@
+// Brief: Toggle exercise complete/incomplete and log completions.
 import prisma from "../config/prisma.js";
 import { createError, createNotFoundError } from "../utils/createError.js";
 import { successResponse } from "../utils/responseHelpers.js";
@@ -297,12 +298,25 @@ export const workoutExerciseController = {
           reps: true,
           sets: true,
           completed: true,
+          logs: {
+            select: { id: true, completedAt: true },
+            orderBy: { completedAt: "desc" },
+          },
           workoutPlan: {
             select: {
               id: true,
               name: true,
             },
           },
+        },
+      });
+
+      // Add a completion log entry
+      await prisma.workoutExerciseLog.create({
+        data: {
+          workoutExerciseId: exerciseId,
+          userId,
+          completedAt: new Date(),
         },
       });
 
@@ -349,6 +363,10 @@ export const workoutExerciseController = {
           reps: true,
           sets: true,
           completed: true,
+          logs: {
+            select: { id: true, completedAt: true },
+            orderBy: { completedAt: "desc" },
+          },
           workoutPlan: {
             select: {
               id: true,

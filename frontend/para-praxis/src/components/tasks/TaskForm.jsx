@@ -41,20 +41,20 @@ export default function TaskForm({ onCreated }) {
       onSubmit={handleSubmit}
       className="mb-6 bg-white border border-slate-200 rounded-lg p-4 shadow-sm flex flex-col gap-3"
     >
-      <div className="flex flex-col gap-2 md:flex-row md:items-center">
+    <div className="flex flex-col gap-2 md:flex-row md:items-center md:flex-nowrap">
         <input
           name="title"
           value={form.title}
           onChange={handleChange}
           placeholder="Task title"
-          className="flex-1 px-3 py-2 rounded border border-slate-300"
+      className="flex-1 min-w-0 px-3 py-2 rounded border border-slate-300"
           required
         />
         <select
           name="priority"
           value={form.priority}
           onChange={handleChange}
-          className="px-3 py-2 rounded border border-slate-300"
+      className="px-3 py-2 rounded border border-slate-300 w-32 shrink-0"
         >
           <option value={1}>High</option>
           <option value={2}>Normal</option>
@@ -65,11 +65,11 @@ export default function TaskForm({ onCreated }) {
           name="dueDate"
           value={form.dueDate}
           onChange={handleChange}
-          className="px-3 py-2 rounded border border-slate-300"
+      className="px-3 py-2 rounded border border-slate-300 w-40 shrink-0"
         />
         <button
           disabled={submitting}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded"
+      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shrink-0"
         >
           {submitting ? "Adding..." : "Add"}
         </button>

@@ -1,3 +1,4 @@
+// Brief: Auth controller (register/login/refresh/logout). Uses JWT + cookies.
 import {
   createUser,
   findUserByEmail,
@@ -23,19 +24,19 @@ import config from "../config/env.js";
 export const register = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
 
-  logger.info("พยายามลงทะเบียนผู้ใช้", { email, name });
+  // keep logs minimal for interview; avoid noisy debug
 
   // เช็คว่าผู้ใช้มีอยู่แล้วไหม
   const existingUser = await findUserByEmail(email);
   if (existingUser) {
-    logger.warn("ลงทะเบียนไม่สำเร็จ - อีเมลมีอยู่แล้ว", { email });
+  logger.warn("อีเมลมีอยู่แล้ว", { email });
     return next(createConflictError(ERROR_MESSAGES.EMAIL_ALREADY_EXISTS));
   }
 
   // สร้างผู้ใช้ใหม่
   const user = await createUser({ name, email, password });
 
-  logger.info("ลงทะเบียนผู้ใช้สำเร็จ", { userId: user.id, email });
+  logger.info("ลงทะเบียนสำเร็จ", { userId: user.id });
 
   // ส่งข้อมูลผู้ใช้โดยไม่มีรหัสผ่าน
   const userData = {
@@ -54,7 +55,7 @@ export const register = asyncHandler(async (req, res, next) => {
 export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
-  logger.info("พยายามเข้าสู่ระบบ", { email });
+  // avoid logging passwords or excessive detail
 
   // หาผู้ใช้จากอีเมล
   const user = await findUserByEmail(email);
@@ -80,7 +81,9 @@ export const login = asyncHandler(async (req, res, next) => {
   const decodedRefresh = jwtUtils.decodeToken(refreshToken);
   const refreshExp = decodedRefresh?.payload?.exp
     ? new Date(decodedRefresh.payload.exp * 1000)
-    : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    : new Date(Date.now() + 1 * 24 * 60 * 60 * 1000);
+  //token will expire in 1 day
+
 
   await prisma.refreshToken.create({
     data: {
@@ -184,14 +187,24 @@ export const getCurrentUser = asyncHandler(async (req, res, next) => {
   );
 });
 
-/**
+/*
  * ออกจากระบบ (ยกเลิก token)
  * หมายเหตุ: ตอนนี้จัดการที่ฝั่ง client
- * ในอนาคตอาจจะมี blacklist สำหรับ token
+
  */
 export const logout = asyncHandler(async (req, res, next) => {
+  
   const { user } = req; // ตั้งค่าจาก requireAuth middleware
+  //show refreshToken จาก cookies
+  const { refreshToken } = req.cookies;
 
+  await prisma.refreshToken.deleteMany({
+    where: { token: refreshToken },
+  });
+  
+  res.clearCookie("refreshToken", {httpOnly: true, sameSite: "Lax", secure: config.isProduction, path: "/"});
+
+  console.log("refreshtoken from logout function",refreshToken);
   logger.info("ผู้ใช้ออกจากระบบ", { userId: user.id });
 
   // ตอนนี้แค่ส่งสำเร็จ

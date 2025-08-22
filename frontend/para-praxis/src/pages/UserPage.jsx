@@ -1,3 +1,4 @@
+// User Profile dashboard: fetches profile and derived stats; allows editing personal goals.
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
@@ -75,6 +76,15 @@ export default function UserPage() {
     return diffDays;
   };
 
+  const formatMinutesHybrid = (totalMinutes) => {
+    const mins = Number(totalMinutes) || 0;
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    if (h && m) return `${h}h ${m}m`;
+    if (h) return `${h}h`;
+    return `${m}m`;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
@@ -93,10 +103,10 @@ export default function UserPage() {
         {/* Profile Header */}
         <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200 mb-8">
           <div className="text-center">
-            <h1 className="text-5xl font-extrabold text-blue-600 persona5-font mb-4">
+            <h1 className="text-xl font-extrabold text-blue-600 persona5-font mb-4">
               USER PROFILE
             </h1>
-            <div className="text-slate-700 text-2xl font-bold mb-2">
+            <div className="text-slate-700 text-3xl font-bold mb-2">
               Welcome back, {user?.name || "User"}!
             </div>
             <div className="text-blue-700 text-lg">
@@ -120,8 +130,7 @@ export default function UserPage() {
               </div>
               <div className="text-sm">Sessions Completed</div>
               <div className="text-lg text-blue-500">
-                {Math.round((stats.focus?.totalFocusTime || 0) / 60)} hours
-                total
+                {formatMinutesHybrid(stats.focus?.totalFocusTime)} total
               </div>
             </div>
           </div>

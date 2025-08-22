@@ -1,3 +1,4 @@
+// Registration screen for new users; pairs RegisterForm with themed visual.
 import React from "react";
 import RegisterForm from "../components/RegisterForm";
 
@@ -6,14 +7,14 @@ export default function RegisterPage() {
     <div className="flex-1 relative w-full flex overflow-hidden items-stretch">
       {/* Background and overlay as before */}
       <img
-        src="/haphaestus.png"
+        src="/registerwallpaper.png"
         alt="Background"
-        className="absolute inset-0 w-fit h-fit object-cover z-0 pointer-events-none"
+        className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
         draggable={false}
       />
-      <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-blue-50 to-white/0 z-10 pointer-events-none" />
-      <div className="relative z-20 flex w-full items-stretch">
-        <div className="w-1/2 flex flex-col justify-center items-center px-4 py-12 sm:px-8">
+      <div className="absolute inset-0 pointer-events-none" />
+      <div className="relative z-20 flex flex-col md:flex-row w-full items-stretch">
+        <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-4 py-12 sm:px-8">
           <div className="max-w-lg text-center">
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white drop-shadow-lg mb-6 tracking-tight">
               Forge Your Destiny
@@ -28,7 +29,7 @@ export default function RegisterPage() {
           </div>
         </div>
         {/* Use your new component here */}
-        <div className="w-1/2 flex items-center justify-center px-4 py-6 sm:px-8">
+        <div className="w-full md:w-1/2 flex items-center justify-center px-4 py-6 sm:px-8">
           <div className="w-full max-w-2xl">
             <RegisterForm />
           </div>

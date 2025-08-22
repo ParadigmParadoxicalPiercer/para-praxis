@@ -1,3 +1,4 @@
+// Brief: Minimal console-based logger with levels. Used across backend.
 import config from "../config/env.js";
 
 class Logger {

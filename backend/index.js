@@ -1,3 +1,4 @@
+// Brief: Express app setup. Registers security, middleware, and API routes.
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -22,6 +23,7 @@ import workoutRoutes from "./src/routes/workout.routes.js";
 import focusRoutes from "./src/routes/focus.routes.js";
 import workoutPlanRoutes from "./src/routes/workout-plan.routes.js";
 import workoutExerciseRoutes from "./src/routes/workout-exercise.routes.js";
+import userWorkoutTemplatesRoutes from "./src/routes/user-workout-templates.routes.js";
 import mediaRoutes from "./src/routes/media.routes.js";
 import cookieParser from "cookie-parser";
 
@@ -69,6 +71,7 @@ app.use("/api/workouts", workoutRoutes);
 app.use("/api/focus", focusRoutes);
 app.use("/api/workout-plans", workoutPlanRoutes);
 app.use("/api/workout-exercises", workoutExerciseRoutes);
+app.use("/api/workout-templates", userWorkoutTemplatesRoutes);
 app.use("/api/media", mediaRoutes);
 
 // จัดการหน้าที่ไม่พบ (404)

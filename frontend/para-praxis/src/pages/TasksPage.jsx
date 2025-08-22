@@ -1,3 +1,4 @@
+// Tasks dashboard: loads tasks via store, filters, and renders form/list with themed left panel.
 import React, { useEffect, useState } from "react";
 import { useTasksStore } from "../stores/useTasksStore";
 import TaskForm from "../components/tasks/TaskForm";
@@ -21,9 +22,9 @@ export default function TasksPage() {
         draggable={false}
       />
       <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/70 to-white/0 z-10 pointer-events-none" />
-      <div className="relative z-20 flex w-full items-stretch">
+      <div className="relative z-20 flex flex-col md:flex-row w-full items-stretch">
         {/* Left Athena Inspiration */}
-        <div className="w-1/2 flex flex-col justify-center items-center px-8 py-12">
+        <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-8 py-12">
           <div className="max-w-lg text-center">
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-slate-800 mb-6 tracking-tight">
               STRATEGY
@@ -46,7 +47,7 @@ export default function TasksPage() {
           </div>
         </div>
         {/* Right Tasks Manager Panel */}
-        <div className="w-1/2 flex flex-col justify-center items-center px-6 py-10">
+  <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-6 py-10">
           <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200 max-w-xl w-full">
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-3xl font-bold text-slate-800">Tasks</h1>

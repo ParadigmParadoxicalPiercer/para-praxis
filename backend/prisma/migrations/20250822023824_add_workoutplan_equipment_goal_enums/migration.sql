@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `WorkoutPlan` ADD COLUMN `equipment` ENUM('BODYWEIGHT', 'DUMBBELL') NULL,
+    ADD COLUMN `goal` ENUM('LOSE_WEIGHT', 'FITNESS', 'BULK', 'V_TAPER') NULL;

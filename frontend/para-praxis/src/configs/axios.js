@@ -1,3 +1,4 @@
+// Brief: Axios instance with auth header + refresh-once on 401.
 import axios from "axios";
 import {
   getAccessToken,
@@ -23,6 +24,8 @@ instance.interceptors.request.use(
   }
 );
 
+// Response interceptor: retry once on 401 by attempting a refresh
+// Skips retry for refresh/logout endpoints to avoid loops on sign-out
 instance.interceptors.response.use(
   (res) => res,
   async (error) => {
@@ -31,7 +34,8 @@ instance.interceptors.response.use(
     if (
       error?.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes("/auth/refresh")
+  !originalRequest.url?.includes("/auth/refresh") &&
+  !originalRequest.url?.includes("/auth/logout")
     ) {
       originalRequest._retry = true;
       try {

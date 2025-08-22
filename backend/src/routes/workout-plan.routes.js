@@ -2,6 +2,7 @@ import express from "express";
 import { requireAuth } from "../middleware/auth.middleware.js";
 import { validateBody } from "../middleware/validate.middleware.js";
 import { workoutPlanController } from "../controllers/workout-plan.controller.js";
+import { listTemplates, createFromTemplate } from "../controllers/workout-templates.controller.js";
 import {
   createWorkoutPlanSchema,
   updateWorkoutPlanSchema,
@@ -19,6 +20,10 @@ router.post(
   validateBody(createWorkoutPlanSchema),
   workoutPlanController.createWorkoutPlan
 );
+
+// Templates
+router.get("/templates", listTemplates);
+router.post("/templates", createFromTemplate);
 
 // ดูแผนออกกำลังกายทั้งหมดของผู้ใช้
 router.get("/", workoutPlanController.getWorkoutPlans);

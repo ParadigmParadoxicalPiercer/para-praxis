@@ -1,32 +1,41 @@
+// Brief: Prisma client wrapper. Provides connect/disconnect with safe shutdown.
 import { PrismaClient } from "@prisma/client";
 import config from "./env.js";
+import logger from "../utils/logger.js";
 
 class Database {
   constructor() {
     this.prisma = new PrismaClient({
-      log: config.isDevelopment
-        ? ["query", "info", "warn", "error"]
-        : ["error"],
+      // keep Prisma logs minimal; use our logger instead
+      log: config.isDevelopment ? ["warn", "error"] : ["error"],
       errorFormat: "pretty",
     });
+  this.connected = false;
+  this.disconnecting = false;
   }
 
   async connect() {
     try {
-      await this.prisma.$connect();
-      console.log("✅ Database connected successfully");
+  if (this.connected) return;
+  await this.prisma.$connect();
+  this.connected = true;
+  logger.info("Database connected");
     } catch (error) {
-      console.error("❌ Database connection failed:", error);
+  logger.error("Database connection failed", { error: String(error) });
       process.exit(1);
     }
   }
 
   async disconnect() {
     try {
-      await this.prisma.$disconnect();
-      console.log("✅ Database disconnected successfully");
+  if (!this.connected || this.disconnecting) return;
+  this.disconnecting = true;
+  await this.prisma.$disconnect();
+  this.connected = false;
+  this.disconnecting = false;
+  logger.info("Database disconnected");
     } catch (error) {
-      console.error("❌ Database disconnection failed:", error);
+  logger.error("Database disconnection failed", { error: String(error) });
     }
   }
 
@@ -46,16 +55,7 @@ class Database {
 
 const database = new Database();
 
-// Handle graceful shutdown
-process.on("SIGINT", async () => {
-  await database.disconnect();
-  process.exit(0);
-});
-
-process.on("SIGTERM", async () => {
-  await database.disconnect();
-  process.exit(0);
-});
+// Note: Shutdown signals are handled centrally in server.js to avoid duplicate handling
 
 export default database.prisma;
 export { database };

@@ -1,3 +1,4 @@
+// Brief: Entry point. Boots DB, starts Express, and handles graceful shutdown.
 import config from "./src/config/env.js";
 import { database } from "./src/config/prisma.js";
 import app from "./index.js";
@@ -34,13 +35,16 @@ const startServer = async () => {
     });
 
     // Handle graceful shutdown
+    let isShuttingDown = false;
     const gracefulShutdown = (signal) => {
+      if (isShuttingDown) return; // prevent duplicate handling
+      isShuttingDown = true;
       logger.info(`Received ${signal}. Shutting down gracefully...`);
 
       server.close(async () => {
         logger.info("HTTP server closed");
 
-        // Close database connection
+        // Close database connection (idempotent in Database class)
         await database.disconnect();
 
         logger.info("Application terminated");

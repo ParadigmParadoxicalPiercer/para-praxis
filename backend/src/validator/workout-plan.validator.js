@@ -15,6 +15,11 @@ export const createWorkoutPlanSchema = yup.object().shape({
     .string()
     .max(500, "Description must not exceed 500 characters")
     .optional(),
+  equipment: yup.mixed().oneOf(["BODYWEIGHT", "DUMBBELL", "GYM"]).optional(),
+  goal: yup
+    .mixed()
+    .oneOf(["LOSE_WEIGHT", "FITNESS", "BULK", "V_TAPER"]) 
+    .optional(),
 });
 
 export const updateWorkoutPlanSchema = yup.object().shape({
@@ -31,6 +36,11 @@ export const updateWorkoutPlanSchema = yup.object().shape({
   description: yup
     .string()
     .max(500, "Description must not exceed 500 characters")
+    .optional(),
+  equipment: yup.mixed().oneOf(["BODYWEIGHT", "DUMBBELL", "GYM"]).optional(),
+  goal: yup
+    .mixed()
+    .oneOf(["LOSE_WEIGHT", "FITNESS", "BULK", "V_TAPER"]) 
     .optional(),
 });
 

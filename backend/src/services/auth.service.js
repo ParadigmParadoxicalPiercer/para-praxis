@@ -75,6 +75,7 @@ export const findUserById = async (userId) => {
         id: true,
         name: true,
         email: true,
+  personalGoals: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -111,6 +112,13 @@ export const updateUserById = async (userId, updateData) => {
       dataToUpdate.email = updateData.email.toLowerCase().trim();
     }
 
+    if (Object.prototype.hasOwnProperty.call(updateData, "personalGoals")) {
+      // Allow null to clear goals; trim non-null strings
+      const v = updateData.personalGoals;
+      dataToUpdate.personalGoals =
+        typeof v === "string" ? v.trim() : v === null ? null : undefined;
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: dataToUpdate,
@@ -118,6 +126,7 @@ export const updateUserById = async (userId, updateData) => {
         id: true,
         name: true,
         email: true,
+        personalGoals: true,
         createdAt: true,
         updatedAt: true,
       },

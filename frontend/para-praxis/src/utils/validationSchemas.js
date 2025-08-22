@@ -1,9 +1,15 @@
 import * as Yup from "yup";
 
+// Shared email schema (single source of truth)
+export const emailSchema = Yup.string().email("Must be a valid email");
+
+// Convenience helper for one-off checks outside of form schemas
+export function isEmail(value) {
+  return emailSchema.isValidSync(value);
+}
+
 export const registerSchema = Yup.object({
-  email: Yup.string()
-    .email("Must be a valid email")
-    .required("Email is required"),
+  email: emailSchema.required("Email is required"),
   username: Yup.string()
     .min(3, "Username must be at least 3 characters")
     .max(50, "Username must be at most 50 characters")
@@ -21,8 +27,6 @@ export const registerSchema = Yup.object({
 });
 
 export const loginSchema = Yup.object({
-  email: Yup.string()
-    .email("Must be a valid email")
-    .required("Email is required"),
+  email: emailSchema.required("Email is required"),
   password: Yup.string().required("Password is required"),
 });

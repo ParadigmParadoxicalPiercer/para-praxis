@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { createFocusSession } from "../../../services/focus.service";
 
 export function useFocusTimer() {
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -7,10 +8,14 @@ export function useFocusTimer() {
   const [selectedDuration, setSelectedDuration] = useState(25);
   const intervalRef = useRef(null);
 
-  // Initialize timer when duration changes
+  // Initialize timer when duration changes (do not reset on pause)
+  const prevSelectedRef = useRef(selectedDuration);
   useEffect(() => {
-    if (!isRunning && !isCompleted) {
-      setTimeRemaining(selectedDuration * 60);
+    if (selectedDuration !== prevSelectedRef.current) {
+      prevSelectedRef.current = selectedDuration;
+      if (!isRunning && !isCompleted) {
+        setTimeRemaining(selectedDuration * 60);
+      }
     }
   }, [selectedDuration, isRunning, isCompleted]);
 
@@ -22,9 +27,16 @@ export function useFocusTimer() {
           if (prev <= 1) {
             setIsRunning(false);
             setIsCompleted(true);
-            // TODO: Play completion sound
-            // TODO: Show completion notification
-            // TODO: Save focus session to database
+            // Save focus session to backend (duration in minutes)
+            const minutes = Math.round(selectedDuration);
+            (async () => {
+              try {
+                // Pass only minutes; backend stores minutes already
+                await createFocusSession({ duration: minutes, completedAt: new Date().toISOString() });
+              } catch {
+                // non-fatal for UI
+              }
+            })();
             return 0;
           }
           return prev - 1;
@@ -43,7 +55,7 @@ export function useFocusTimer() {
         intervalRef.current = null;
       }
     };
-  }, [isRunning, timeRemaining]);
+  }, [isRunning, timeRemaining, selectedDuration]);
 
   const startTimer = () => {
     if (timeRemaining > 0) {

@@ -14,6 +14,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Equipment {
+  BODYWEIGHT
+  DUMBBELL
+  GYM
+}
+
+enum Goal {
+  LOSE_WEIGHT
+  FITNESS
+  BULK
+  V_TAPER
+}
+
+enum TemplateCategory {
+  FULL_BODY
+  UPPER
+  LOWER
+  CORE
+  CARDIO
+}
+
 model User {
   id            Int      @id @default(autoincrement())
   name          String
@@ -27,6 +48,8 @@ model User {
   tasks         Task[]
   workoutPlans  WorkoutPlan[]
   workouts      WorkoutExercise[]
+  workoutTemplates WorkoutTemplate[]
+  workoutExerciseLogs WorkoutExerciseLog[]
   medias        Media[]
   focusSessions FocusSession[]
   RefreshToken  RefreshToken[]
@@ -66,6 +89,8 @@ model WorkoutPlan {
   name        String
   description String?
   week        Int? // If you want to track weeks
+  equipment   Equipment?
+  goal        Goal?
   user        User              @relation(fields: [userId], references: [id])
   userId      Int
   exercises   WorkoutExercise[]
@@ -86,6 +111,42 @@ model WorkoutExercise {
   userId        Int?
 
   Media Media[] // Optional relation to media for images or videos related to the exercise
+  logs  WorkoutExerciseLog[]
+}
+
+model WorkoutExerciseLog {
+  id                 Int               @id @default(autoincrement())
+  workoutExercise    WorkoutExercise   @relation(fields: [workoutExerciseId], references: [id])
+  workoutExerciseId  Int
+  user               User?             @relation(fields: [userId], references: [id])
+  userId             Int?
+  completedAt        DateTime          @default(now())
+  createdAt          DateTime          @default(now())
+}
+
+model WorkoutTemplate {
+  id          Int               @id @default(autoincrement())
+  name        String
+  description String?
+  equipment   Equipment
+  goal        Goal
+  category    TemplateCategory?
+  user        User              @relation(fields: [userId], references: [id])
+  userId      Int
+  exercises   WorkoutTemplateExercise[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model WorkoutTemplateExercise {
+  id                 Int              @id @default(autoincrement())
+  name               String
+  description        String?
+  reps               Int?
+  sets               Int?
+  order              Int?             @default(0)
+  template           WorkoutTemplate  @relation(fields: [templateId], references: [id])
+  templateId         Int
 }
 
 model Media {
